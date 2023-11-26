@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Generator czatu (BETA)</title>
+    <style>
+        /* Add CSS styles for the forum's appearance */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+        }
+        #chat-container {
+            width: 80%;
+            max-width: 600px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        #chat-box {
+            height: 300px;
+            overflow-y: scroll;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+        .message {
+            max-width: 70%;
+            margin: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            animation: fade 0.5s;
+            position: relative;
+        }
+        .username-label {
+            position: absolute;
+            top: -15px;
+            background-color: #000;
+            color: #fff;
+            padding: 2px 5px;
+            border-radius: 5px;
+        }
+        .user-message {
+            align-self: flex-end;
+            background-color: #0077b6;
+            color: #fff;
+        }
+        .other-message {
+            align-self: flex-start;
+            background-color: #f0f0f0;
+        }
+        #message-input-container {
+            display: flex;
+            width: 100%;
+            padding: 10px;
+            background-color: #f0f0f0;
+        }
+        #message-input {
+            flex: 1;
+            padding: 5px;
+            border: none;
+            border-radius: 5px;
+        }
+        .send-button {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-left: 10px;
+        }
+        .delete-button {
+            background-color: #ff0000;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .logout-button {
+            background-color: #ff6600;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        /* Add animation on the button */
+        .send-button:hover, .delete-button:hover, .logout-button:hover {
+            background-color: #555;
+        }
+        #login-form {
+            text-align: center;
+            margin: 10px;
+        }
+
+        @keyframes fade {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Define themes with gradients */
+        .gradient-theme1 {
+            background: linear-gradient(to right, #ffafbd, #ffc3a0);
+            color: #fff;
+        }
+        .gradient-theme2 {
+            background: linear-gradient(to right, #2196F3, #64B5F6);
+            color: #fff;
+        }
+        .gradient-theme3 {
+            background: linear-gradient(to right, #fbc2eb, #a6c1ee);
+            color: #fff;
+        }
+        .gradient-theme4 {
+            background: linear-gradient(to right, #a8ff78, #78ffd6);
+            color: #000;
+        }
+        .gradient-theme5 {
+            background: linear-gradient(to right, #f7b733, #fc4a1a);
+            color: #fff;
+        }
+        .gradient-theme6 {
+            background: linear-gradient(to right, #f06d06, #a81d33);
+            color: #fff;
+        }
+        .gradient-theme7 {
+            background: linear-gradient(to right, #5c258d, #4389a2);
+            color: #fff;
+        }
+
+        /* Add single-color themes */
+        .dark-theme {
+            background-color: #333;
+            color: #fff;
+        }
+        .light-theme {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        .orange-theme {
+            background-color: #ff6600;
+            color: #fff;
+        }
+    </style>
+</head>
+<body class="light-theme">
+    <header>
+        <h1>Generator czatu(BETA)</h1>
+        <label for="theme-select">Select Theme:</label>
+        <select id="theme-select" onchange="changeTheme()">
+            <option value="gradient-theme1">Gradient Theme 1</option>
+            <option value="gradient-theme2">Gradient Theme 2</option>
+            <option value="gradient-theme3">Gradient Theme 3</option>
+            <option value="gradient-theme4">Gradient Theme 4</option>
+            <option value="gradient-theme5">Gradient Theme 5</option>
+            <option value="gradient-theme6">Gradient Theme 6</option>
+            <option value="gradient-theme7">Gradient Theme 7</option>
+            <option value="dark-theme">Dark Theme</option>
+            <option value="light-theme" selected="selected">Light Theme</option>
+            <option value="orange-theme">Orange Theme</option>
+        </select>
+    </header>
+    <div id="chat-container">
+        <div id="chat-box"></div>
+        <div id="message-input-container" style="display: none;">
+            <input type="text" id="message-input" placeholder="Type your message">
+            <button class="send-button" onclick="sendMessage('user')">Send (Right)</button>
+            <button class="send-button" onclick="sendMessage('other')">Send (Left)</button>
+            <button class="delete-button" onclick="deleteMessages()">Delete Messages</button>
+            <button class="logout-button" onclick="logout()">Logout</button>
+        </div>
+    </div>
+    <div id="login-form" style="display: block;">
+        <!-- Login form -->
+        <label for="username-right">Username (Right):</label>
+        <input type="text" id="username-right" placeholder="Right User" value="user01">
+        <br>
+        <label for="username-left">Username (Left):</label>
+        <input type="text" id="username-left" placeholder="Left User" value="user02">
+        <br>
+        <button onclick="login()">Login</button>
+    </div>
+
+    <script>
+        let rightUsername = "";
+        let leftUsername = "";
+
+        // Variables to store messages
+        let messages = [];
+
+        // Login handling
+        function login() {
+            rightUsername = document.getElementById("username-right").value || "Right User";
+            leftUsername = document.getElementById("username-left").value || "Left User";
+
+            document.getElementById("login-form").style.display = "none";
+            document.getElementById("message-input-container").style.display = "flex";
+        }
+
+        // Message sending
+        function sendMessage(sender) {
+            const message = document.getElementById("message-input").value;
+            if (message) {
+                const username = sender === 'user' ? rightUsername : leftUsername;
+                messages.push({ sender: username, text: message });
+                displayMessages();
+                document.getElementById("message-input").value = "";
+            }
+        }
+
+        // Displaying messages
+        function displayMessages() {
+            const chatBox = document.getElementById("chat-box");
+            chatBox.innerHTML = ""; // Clear the content
+            messages.forEach((message, index) => {
+                const messageElement = document.createElement("div");
+                messageElement.className = "message";
+                if (message.sender === rightUsername) {
+                    messageElement.classList.add("user-message");
+                } else {
+                    messageElement.classList.add("other-message");
+                }
+                messageElement.innerHTML = `<div class="username-label">${message.sender}</div>${message.text}`;
+                const deleteButton = document.createElement("button");
+                deleteButton.textContent = "Delete";
+                deleteButton.onclick = () => deleteMessage(index);
+                messageElement.appendChild(deleteButton);
+                chatBox.appendChild(messageElement);
+            });
+        }
+
+        // Deleting a message
+        function deleteMessage(index) {
+            messages.splice(index, 1);
+            displayMessages();
+        }
+
+        // Deleting all messages
+        function deleteMessages() {
+            messages = [];
+            displayMessages();
+        }
+
+        // Logout handling
+        function logout() {
+            rightUsername = "";
+            leftUsername = "";
+            document.getElementById("login-form").style.display = "block";
+            document.getElementById("message-input-container").style.display = "none";
+        }
+
+        // Theme change handling
+        function changeTheme() {
+            const themeSelect = document.getElementById("theme-select");
+            const selectedTheme = themeSelect.options[themeSelect.selectedIndex].value;
+            document.body.className = selectedTheme;
+        }
+    </script>
+
+
+
+
+</body></html>
